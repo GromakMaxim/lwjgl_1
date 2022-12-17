@@ -1,8 +1,11 @@
 package org.example;
 
+import lombok.Getter;
+
+
 public class Engine {
     public void run() {
-
+        this.init();
     }
 
     /**
