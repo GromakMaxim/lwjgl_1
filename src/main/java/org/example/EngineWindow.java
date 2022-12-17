@@ -14,8 +14,8 @@ import java.nio.IntBuffer;
 @Getter
 @Setter
 public class EngineWindow {
-    private final int WIDTH = 1024;
-    private final int HEIGHT = 768;
+    private final int WIDTH = 640;
+    private final int HEIGHT = 360;
     private final String TITLE = "My game";
     public IntBuffer bufferWidth;
     public IntBuffer bufferHeight;
@@ -44,6 +44,8 @@ public class EngineWindow {
         } catch (Exception ignored) {
 
         }
+
+        this.vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
         GLFW.glfwSetWindowTitle(this.windowId, TITLE);
         GLFW.glfwSetWindowSize(this.windowId, WIDTH, HEIGHT);
