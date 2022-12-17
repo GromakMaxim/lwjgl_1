@@ -2,7 +2,7 @@ package org.example.controller;
 
 import org.lwjgl.glfw.GLFW;
 
-public abstract class AbstractController implements InteractibleController{
+public abstract class AbstractController implements InteractiveController {
     protected long windowId;
     protected boolean[] keys;
 

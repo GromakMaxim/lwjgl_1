@@ -1,6 +1,6 @@
 package org.example.controller;
 
-public interface InteractibleController {
+public interface InteractiveController {
     boolean keyDown(int keyId);
 
      boolean keyPressed(int keyId);
