@@ -1,29 +1,32 @@
-package org.example;
+package org.example.controller;
 
 import org.lwjgl.glfw.GLFW;
 
-public class KeyboardController {
-    private long windowId;
+public abstract class AbstractController implements InteractibleController{
+    protected long windowId;
+    protected boolean[] keys;
 
-    private boolean[] keys = new boolean[GLFW.GLFW_KEY_LAST]; // хранит все нажатые кнопки, размер 348
-
-    public KeyboardController(long windowId) {
+    public AbstractController(long windowId) {
         this.windowId = windowId;
     }
 
-    private boolean keyDown(int keyId) {
+    @Override
+    public boolean keyDown(int keyId) {
         return GLFW.glfwGetKey(windowId, keyId) == 1;
     }
 
+    @Override
     public boolean keyPressed(int keyId) {
         return keyDown(keyId) && !keys[keyId];
     }
 
-    private boolean keyReleased(int keyId) {
+    @Override
+    public boolean keyReleased(int keyId) {
         return !keyDown(keyId) && keys[keyId];
     }
 
-    public void handleKeyboardInput() {
+    @Override
+    public void handleInput() {
         for (int i = 0; i < this.keys.length; i++) {
             this.keys[i] = this.keyDown(i);
         }

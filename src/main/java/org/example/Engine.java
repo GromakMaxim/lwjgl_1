@@ -1,6 +1,8 @@
 package org.example;
 
 import lombok.Getter;
+import org.example.controller.KeyboardController;
+import org.example.controller.MouseController;
 import org.lwjgl.glfw.GLFW;
 
 
@@ -8,12 +10,14 @@ public class Engine {
     @Getter
     private EngineWindow engineWindow;
     private KeyboardController keyboardController;
+    private MouseController mouseController;
 
 
     public Engine() {
         this.engineWindow = new EngineWindow();
         this.engineWindow.create();
         this.keyboardController = new KeyboardController(this.engineWindow.getWindowId());
+        this.mouseController = new MouseController(this.engineWindow.getWindowId());
     }
 
     public void run() {
@@ -31,8 +35,12 @@ public class Engine {
             if (this.keyboardController.keyPressed(GLFW.GLFW_KEY_LEFT)) System.out.println("left");
             if (this.keyboardController.keyPressed(GLFW.GLFW_KEY_RIGHT)) System.out.println("right");
 
+            if (this.mouseController.keyPressed(0)) System.out.println("left mouse click");
+            if (this.mouseController.keyPressed(1)) System.out.println("right mouse click");
+
             // обработка нажатий
-            keyboardController.handleKeyboardInput();
+            keyboardController.handleInput();
+            mouseController.handleInput();
             // рендеринг
             this.engineWindow.update();
         }
