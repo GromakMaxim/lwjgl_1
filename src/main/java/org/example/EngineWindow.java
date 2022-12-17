@@ -60,11 +60,16 @@ public class EngineWindow {
     }
 
     public void update() {
-
+        GLFW.glfwPollEvents();
+        GLFW.glfwSwapBuffers(this.windowId);
     }
 
     public void destroy() {
+        GLFW.glfwDestroyWindow(this.windowId);
+    }
 
+    public boolean isRequestClosed() {
+        return GLFW.glfwWindowShouldClose(this.windowId);
     }
 
 }
