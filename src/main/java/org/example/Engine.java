@@ -38,6 +38,9 @@ public class Engine {
             if (this.mouseController.keyPressed(0)) System.out.println("left mouse click");
             if (this.mouseController.keyPressed(1)) System.out.println("right mouse click");
 
+            System.out.println("x: " + this.mouseController.getMouseCallback().getCursorPosX() +
+                                       "y: " + this.mouseController.getMouseCallback().getCursorPosY());
+
             // обработка нажатий
             keyboardController.handleInput();
             mouseController.handleInput();
