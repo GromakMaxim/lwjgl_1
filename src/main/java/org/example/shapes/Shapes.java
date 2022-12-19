@@ -10,8 +10,6 @@ public enum Shapes {
     SQUARE(new float[]{0.5f, 0.5f, 0,
             -0.5f, 0.5f, 0,
             -0.5f, -0.5f, 0,
-            0.5f, 0.5f, 0,
-            -0.5f, -0.5f, 0,
             0.5f, -0.5f, 0}),
 
     ROMB(new float[]{0.0f, 0.5f, 0f,

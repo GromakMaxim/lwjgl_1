@@ -5,19 +5,23 @@ import org.example.controller.KeyboardController;
 import org.example.controller.MouseController;
 import org.example.shapes.Shapes;
 import org.example.shapes.ShapesInt;
+import org.example.util.MemoryManager;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46C;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11C.GL_UNSIGNED_INT;
+import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL15C.*;
 import static org.lwjgl.opengl.GL20C.*;
 import static org.lwjgl.opengl.GL30C.glBindVertexArray;
 import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
+import static org.lwjgl.opengl.GL45C.glCreateBuffers;
+import static org.lwjgl.opengl.GL45C.glCreateVertexArrays;
 
 
 public class Engine {
@@ -26,28 +30,15 @@ public class Engine {
     private KeyboardController keyboardController;
     private MouseController mouseController;
 
+    private MemoryManager memoryManager;
+
 
     public Engine() {
         this.engineWindow = new EngineWindow();
         this.engineWindow.create();
         this.keyboardController = new KeyboardController(this.engineWindow.getWindowId());
         this.mouseController = new MouseController(this.engineWindow.getWindowId());
-    }
-
-    public FloatBuffer storeDataInFloatBuffer(float[] data) {
-        FloatBuffer buffer = MemoryUtil.memAllocFloat(data.length);
-        buffer.put(data);
-        buffer.flip();
-
-        return buffer;
-    }
-
-    public IntBuffer storeDataInIntBuffer(int[] data) {
-        IntBuffer buffer = MemoryUtil.memAllocInt(data.length);
-        buffer.put(data);
-        buffer.flip();
-
-        return buffer;
+        this.memoryManager = new MemoryManager();
     }
 
     public void run() {
@@ -59,30 +50,22 @@ public class Engine {
      */
     public void update() {
 
-        int vaoId = glGenVertexArrays();
-        GL30.glBindVertexArray(vaoId);
-
-
-        int iboId = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-        IntBuffer intBuffer = this.storeDataInIntBuffer(ShapesInt.SQUARE.getArray());
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, intBuffer, GL_STATIC_DRAW);
-        MemoryUtil.memFree(intBuffer);
+        int vertexArrays = glCreateVertexArrays();
+        glBindVertexArray(vertexArrays);
 
         //генерируем Vertex Buffer и связываем его
-        int vboId = glGenBuffers();
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        FloatBuffer floatBuffer = this.storeDataInFloatBuffer(Shapes.SQUARE.getArr());
-        glBufferData(GL_ARRAY_BUFFER, floatBuffer, GL_STATIC_DRAW);
-        MemoryUtil.memFree(floatBuffer);
-        //создаем атрибут дл¤ вершины, указываем id, тип данных.
-        glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
+        int vertexBuffer = glCreateBuffers();
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        glBufferData(GL_ARRAY_BUFFER, this.memoryManager.putData(Shapes.SQUARE.getArr()), GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
 
 
-        //разв¤зываем Vbo's и сам лист Vao
-        glBindBuffer(GL_ARRAY_BUFFER, vboId);
-        glBindVertexArray(vaoId);
+        int indexBuffer = glCreateBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this.memoryManager.putData(ShapesInt.SQUARE.getArray()), GL_STATIC_DRAW);
 
+        glBindVertexArray(vertexArrays);
 
         while (!this.engineWindow.isRequestClosed()) {
 
@@ -101,15 +84,13 @@ public class Engine {
             keyboardController.handleInput();
             mouseController.handleInput();
 
-            glClearColor(0, 1, 0, 1);
-            glClear(GL11.GL_COLOR_BUFFER_BIT);
+            glClearColor(0, 1, 1, 1);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-            glBindVertexArray(vaoId);
-            glEnableVertexAttribArray(0);
-            //GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, Shapes.SQUARE.getLength() / 3);
-            glDrawElements(GL11.GL_TRIANGLES, ShapesInt.SQUARE.getLength(), GL_UNSIGNED_INT, 0);
-            glDisableVertexAttribArray(0);
-            glBindVertexArray(vaoId);
+            glBindVertexArray(vertexArrays);
+
+            glDrawElements(GL_TRIANGLES, ShapesInt.SQUARE.getLength(), GL_UNSIGNED_INT, 0);
+            glBindVertexArray(vertexArrays);
 
             // рендеринг
             this.engineWindow.update();
